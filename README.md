@@ -1,3 +1,19 @@
+# Instructions
+
+This is a simple Go API that will read from a local .csv file and display its content as a JSON response.
+
+Currently, this API supports the following endpoints:
+
+- /read -> This endpoint will read from a local .csv file (pokemons.csv) with two columns (first one must be an ID of type integer and second one a name of type string) and display the read values as a JSON response. It accepts an "id" query param that has to be an integer and will be used to look for an item that has said id.
+- /     -> This endpoint was added just to send a JSON message to specify which endpoints are available, so it is only for general information purposes, in case it gets accessed by accident, since it is the entry point.
+
+This API was built using Go 1.15, to run it you only have to clone or fork this repo, then build the main API file by running ```go build cmd/api/main.go``` while in the root git project directory and run the generated executable file.
+
+This API is set to work through port 8080 by default, but that can be changed in the main.go file if needed. 
+
+Since no external libraries were used to create this API, there is no need to install anything else in order to run it.
+
+
 # Golang Bootcamp
 
 ## Introduction
