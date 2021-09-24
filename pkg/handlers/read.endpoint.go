@@ -17,7 +17,7 @@ type element struct {
 }
 
 // The /read endpoint handler.
-func ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
+func (hr readHandler) ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	fileArr, err := readCsv("./files/pokemons.csv")

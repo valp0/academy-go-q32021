@@ -8,7 +8,7 @@ import (
 )
 
 // The entry point handler.
-func Home(w http.ResponseWriter, r *http.Request) {
+func (hh homeHandler) Home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	jRes, _ := utils.JsonResponse("At this stage, the only available endpoint is /read.")
