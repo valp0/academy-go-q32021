@@ -10,12 +10,14 @@ import (
 const port = ":8080"
 
 func main() {
-	http.HandleFunc("/", handlers.Home)
-	http.HandleFunc("/read", handlers.ReadLocalCsv)
+	hh := handlers.NewHomeHandler()
+	rh := handlers.NewReadHandler()
+
+	http.HandleFunc("/", hh.Home)
+	http.HandleFunc("/read", rh.ReadLocalCsv)
 
 	log.Println("Listening on port", port[1:])
-	err := http.ListenAndServe(port, nil)
-	if err == nil {
+	if err := http.ListenAndServe(port, nil); err != nil {
 		log.Fatal(err)
 	}
 }
