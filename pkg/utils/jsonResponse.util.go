@@ -6,7 +6,7 @@ import (
 )
 
 // A function that returns a JSON containing what it receives
-func JsonResponse(r interface{}) ([]byte, error) {
+func JsonResponse(r interface{}) []byte {
 
 	// Returned JSON will be contained in a "data" field, and the
 	// received interface will be contained in either a...
@@ -37,8 +37,9 @@ func JsonResponse(r interface{}) ([]byte, error) {
 	// Parsing response struct to JSON.
 	jRes, err := json.Marshal(resp)
 	if err != nil {
-		log.Println("Error converting message struct to JSON", err)
+		log.Println("Error converting response struct to JSON.", err)
+		return []byte{}
 	}
 
-	return jRes, err
+	return jRes
 }

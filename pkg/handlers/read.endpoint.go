@@ -16,6 +16,16 @@ type element struct {
 	Value interface{} `json:"name"`
 }
 
+type readHandler struct{}
+
+type IReadHandler interface {
+	ReadLocalCsv(w http.ResponseWriter, r *http.Request)
+}
+
+func NewReadHandler() IReadHandler {
+	return readHandler{}
+}
+
 // The /read endpoint handler.
 func (hr readHandler) ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -23,16 +33,22 @@ func (hr readHandler) ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
 	fileArr, err := readCsv("./files/pokemons.csv")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		jErr, _ := utils.JsonResponse("Couldn't read local csv file. " + err.Error())
-		fmt.Fprintln(w, utils.Prettify(jErr))
+		jErr := utils.JsonResponse("Couldn't read local csv file. " + err.Error())
+		b, err := fmt.Fprintln(w, utils.Prettify(jErr))
+		if err != nil || b < 1 {
+			fmt.Println("Couldn't write response bytes to http.ResponseWriter,", err)
+		}
 		return
 	}
 
 	pokemonList, err := fillList(fileArr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		jErr, _ := utils.JsonResponse(err.Error())
-		fmt.Fprintln(w, utils.Prettify(jErr))
+		jErr := utils.JsonResponse(err.Error())
+		b, err := fmt.Fprintln(w, utils.Prettify(jErr))
+		if err != nil || b < 1 {
+			fmt.Println("Couldn't write response bytes to http.ResponseWriter,", err)
+		}
 		return
 	}
 
@@ -41,37 +57,34 @@ func (hr readHandler) ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
 
 	// Will return the entire pokemon list if no id query param is sent.
 	if !ok || len(id[0]) < 1 {
-		pokeResp, err := utils.JsonResponse(pokemonList)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			jErr, _ := utils.JsonResponse("Error generating JSON response. " + err.Error())
-			fmt.Fprintln(w, utils.Prettify(jErr))
-		}
-
+		pokeResp := utils.JsonResponse(pokemonList)
 		w.WriteHeader(http.StatusOK)
 		prettified := utils.Prettify(pokeResp)
-		fmt.Fprintln(w, prettified)
+		b, err := fmt.Fprintln(w, prettified)
+		if err != nil || b < 1 {
+			fmt.Println("Couldn't write response bytes to http.ResponseWriter,", err)
+		}
 		return
 	}
 
 	pokeSearch, err := queryById(pokemonList, id[0])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		jErr, _ := utils.JsonResponse(err.Error())
-		fmt.Fprintln(w, utils.Prettify(jErr))
+		jErr := utils.JsonResponse(err.Error())
+		b, err := fmt.Fprintln(w, utils.Prettify(jErr))
+		if err != nil || b < 1 {
+			fmt.Println("Couldn't write response bytes to http.ResponseWriter,", err)
+		}
 		return
 	}
 
-	pokeResp, err := utils.JsonResponse(pokeSearch)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		jErr, _ := utils.JsonResponse("Couldn't read local csv file. " + err.Error())
-		fmt.Fprintln(w, utils.Prettify(jErr))
-	}
-
+	pokeResp := utils.JsonResponse(pokeSearch)
 	w.WriteHeader(http.StatusOK)
 	prettified := utils.Prettify(pokeResp)
-	fmt.Fprintln(w, prettified)
+	b, err := fmt.Fprintln(w, prettified)
+	if err != nil || b < 1 {
+		fmt.Println("Couldn't write response bytes to http.ResponseWriter,", err)
+	}
 }
 
 // A function that receives a path to a csv file,
