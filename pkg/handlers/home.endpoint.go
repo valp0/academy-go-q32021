@@ -13,7 +13,6 @@ type IHomeHandler interface {
 	Home(w http.ResponseWriter, r *http.Request)
 }
 
-// Will return homeHandler struct.
 func NewHomeHandler() IHomeHandler {
 	return homeHandler{}
 }
