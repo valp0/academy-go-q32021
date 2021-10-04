@@ -24,12 +24,12 @@ func main() {
 
 	log.Println("Listening on port", port[1:])
 	if err := http.ListenAndServe(port, nil); err != nil {
-		panic(err.Error())
+		log.Fatal(err.Error())
 	}
 }
 
 func logExit(c chan os.Signal) {
 	for range c {
-		log.Fatal("Process terminated")
+		log.Println("Process terminated")
 	}
 }

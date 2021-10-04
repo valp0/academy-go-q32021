@@ -5,11 +5,6 @@ type Element struct {
 	Value interface{} `json:"name"`
 }
 
-type file interface {
-	Read() error
-	// Write() (int, error)
-}
-
 type CSV struct {
 	Path     string
 	Body     [][]string
