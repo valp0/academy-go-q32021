@@ -12,7 +12,7 @@ import (
 
 type CSV entities.CSV
 
-func NewCsvHandler(path string) (CSV, error) {
+func NewCsvService(path string) (CSV, error) {
 	f := CSV{Path: path}
 	err := f.Read()
 	if err != nil {

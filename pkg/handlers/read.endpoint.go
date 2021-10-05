@@ -27,7 +27,7 @@ const path = "./files/pokemons.csv"
 func (readHandler) ReadLocalCsv(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	f, err := repo.NewCsvHandler(path)
+	f, err := repo.NewCsvService(path)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		jErr := utils.JsonResponse("Couldn't read local csv file. " + err.Error())
