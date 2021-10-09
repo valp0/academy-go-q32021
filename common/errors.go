@@ -20,6 +20,11 @@ func ExternalError(w http.ResponseWriter, err error) {
 	displayErr(w, err)
 }
 
+func BadReqError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusBadRequest)
+	displayErr(w, err)
+}
+
 func displayErr(w http.ResponseWriter, err error) {
 	jErr := JsonResponse(err.Error())
 	if _, e := fmt.Fprintln(w, PrettifyJson(jErr)); e != nil {

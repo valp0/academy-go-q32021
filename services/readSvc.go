@@ -1,17 +1,39 @@
 package services
 
-import "github.com/valp0/academy-go-q32021/repo"
+import "github.com/valp0/academy-go-q32021/common"
 
 // Read ID query param from read handler
 // Return whole pokemon list if no ID is given (displayAll.go repo)
 // Return only pokemon with matching ID if ID is given (getById.go repo)
 
-// Service that reads the id param and returns a prettified JSON response.
-func ReadSvc(params map[string][]string) (string, error) {
+type getter interface {
+	GetElements(id, path string) ([]common.Element, error)
+}
+
+type repository interface {
+	getter
+	apiCaller
+}
+
+type readSvc struct {
+	repo repository
+}
+
+func NewReadSvc(repo repository) readSvc {
+	return readSvc{repo}
+}
+
+// Receives a url.Values, reads the id param and returns a prettified JSON response.
+func (rs readSvc) Query(params map[string][]string, path string) ([]common.Element, error) {
 	id, ok := params["id"]
-	if !ok || len(id[0]) < 1 {
-		return repo.DisplayAll()
+	if !ok {
+		id = []string{""}
 	}
 
-	return repo.GetById(id[0])
+	res, err := rs.repo.GetElements(id[0], path)
+	if err != nil {
+		return []common.Element{}, err
+	}
+
+	return res, nil
 }

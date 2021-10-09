@@ -7,6 +7,8 @@ import (
 	"os/signal"
 
 	"github.com/valp0/academy-go-q32021/handlers"
+	"github.com/valp0/academy-go-q32021/repo"
+	"github.com/valp0/academy-go-q32021/services"
 )
 
 const (
@@ -20,13 +22,18 @@ func RunServer() error {
 	signal.Notify(c, os.Interrupt)
 	go logExit(c)
 
+	r := repo.Repo{}
+
+	rSvc := services.NewReadSvc(r)
+	fSvc := services.NewFetchSvc(r)
+
 	hh := handlers.NewHomeHandler()
-	rh := handlers.NewReadHandler()
-	fh := handlers.NewFetchHandler()
+	rh := handlers.NewReadHandler(rSvc)
+	fh := handlers.NewFetchHandler(fSvc)
 
 	http.HandleFunc("/", hh.Home)
 	http.HandleFunc("/read", rh.Read)
-	http.HandleFunc("/fetch", fh.Fetch)
+	http.HandleFunc("/fetch", fh.ApiFetch)
 
 	log.Println("Listening on port", port[1:])
 	if err := http.ListenAndServe(port, nil); err != nil {

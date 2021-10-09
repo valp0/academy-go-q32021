@@ -28,7 +28,7 @@ func (homeHandler) Home(w http.ResponseWriter, r *http.Request) {
 	prettified := common.PrettifyJson(jRes)
 
 	w.WriteHeader(http.StatusOK)
-	b, err := fmt.Fprintf(w, prettified)
+	b, err := fmt.Fprint(w, prettified)
 	if err != nil || b < 1 {
 		common.InternalError(w, err)
 	}

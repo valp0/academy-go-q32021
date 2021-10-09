@@ -1,15 +1,11 @@
 package common
 
-// Element, file struct, etc
-
-var FilePath string
+// Element, response struct, etc
 
 type Element struct {
 	Key   int    `json:"id"`
 	Value string `json:"name"`
 }
-
-type Elements [][]Element
 
 /*---------------------------------------------------------*/
 // jsonResponse.go
