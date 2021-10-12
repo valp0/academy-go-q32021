@@ -16,23 +16,26 @@ const (
 	path = "./files/pokemons.csv"
 )
 
+// Will setup a server to run using configuration provided in app.go.
 func RunServer() error {
 	os.Setenv("PATH", path)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go logExit(c)
 
-	r := repo.Repo{}
+	lr := repo.NewLocalRepo()
+	ar := repo.NewApiRepo()
 
-	rSvc := services.NewReadSvc(r)
-	fSvc := services.NewFetchSvc(r)
+	hSvc := services.NewHomeSvc()
+	rSvc := services.NewReadSvc(lr)
+	fSvc := services.NewFetchSvc(ar)
 
-	hh := handlers.NewHomeHandler()
+	hh := handlers.NewHomeHandler(hSvc)
 	rh := handlers.NewReadHandler(rSvc)
 	fh := handlers.NewFetchHandler(fSvc)
 
 	http.HandleFunc("/", hh.Home)
-	http.HandleFunc("/read", rh.Read)
+	http.HandleFunc("/read", rh.Query)
 	http.HandleFunc("/fetch", fh.ApiFetch)
 
 	log.Println("Listening on port", port[1:])

@@ -17,10 +17,12 @@ type apiCaller interface {
 }
 
 type fetchSvc struct {
-	repo repository
+	repo apiCaller
 }
 
-func NewFetchSvc(repo repository) fetchSvc {
+// Receives an instance of a type that satisfies the apiCaller interface
+// and returns a fetchSvc type containing it.
+func NewFetchSvc(repo apiCaller) fetchSvc {
 	return fetchSvc{repo}
 }
 

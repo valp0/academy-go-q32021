@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-// A function that prettifies JSON strings.
+// A function that prettifies a JSON byte array.
 func PrettifyJson(ugly []byte) string {
 	var prettified bytes.Buffer
 	err := json.Indent(&prettified, ugly, "", "  ")

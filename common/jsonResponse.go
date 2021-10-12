@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-// A function that returns a JSON containing what it receives
+// A function that returns a JSON containing what it receives.
 func JsonResponse(r interface{}) []byte {
 	var resp body
 

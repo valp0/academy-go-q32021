@@ -52,7 +52,7 @@ func TestFetchSvc(t *testing.T) {
 		},
 	}
 
-	r := repo.Repo{}
+	r := repo.NewApiRepo()
 	fSvc := NewFetchSvc(r)
 	common.RandInt = func(int) int { return 150 } // Mocking RandInt function
 	repo.CallApi = mockedGet                      // Mocking get HTTP request

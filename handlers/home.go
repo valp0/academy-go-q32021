@@ -10,25 +10,34 @@ import (
 // Give a message to inform about available endpoints
 // Display message as JSON (use jsonResponse.go common)
 
-type homeHandler struct{}
-
-type iHomeHandler interface {
-	Home(w http.ResponseWriter, r *http.Request)
+type informer interface {
+	Inform() string
 }
 
-func NewHomeHandler() iHomeHandler {
-	return homeHandler{}
+type homeHandler struct {
+	service informer
+}
+
+// Receives an instance of a type that satisfies the informer interface
+// and returns a homeHandler type containing it.
+func NewHomeHandler(service informer) homeHandler {
+	return homeHandler{service}
 }
 
 // The / endpoint handler.
-func (homeHandler) Home(w http.ResponseWriter, r *http.Request) {
+func (hh homeHandler) Home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	jRes := common.JsonResponse("At this stage, available endpoints are /read and /fetch.")
-	prettified := common.PrettifyJson(jRes)
+	if r.Method != http.MethodGet {
+		common.MethodNotAllowedError(w, r.Method)
+		return
+	}
+
+	msg := hh.service.Inform()
+	res := common.PrettyJsonRes(msg)
 
 	w.WriteHeader(http.StatusOK)
-	b, err := fmt.Fprint(w, prettified)
+	b, err := fmt.Fprint(w, res)
 	if err != nil || b < 1 {
 		common.InternalError(w, err)
 	}
