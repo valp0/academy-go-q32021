@@ -26,6 +26,8 @@ func NewFetchSvc(repo apiCaller) fetchSvc {
 	return fetchSvc{repo}
 }
 
+const baseUrl = "https://pokeapi.co/api/v2/pokemon-form/"
+
 // Service that reads the id param and adds pokemon with said ID to csv.
 func (fs fetchSvc) Fetch(params map[string][]string, path string) ([]common.Element, error) {
 	var sentId *string
@@ -74,6 +76,6 @@ func pokeApi(fs fetchSvc, id *int, path string) ([]common.Element, error) {
 		idInt = *id
 	}
 
-	url := "https://pokeapi.co/api/v2/pokemon-form/" + strconv.Itoa(idInt)
+	url := baseUrl + strconv.Itoa(idInt)
 	return fs.repo.CallPokeApi(url, path)
 }
