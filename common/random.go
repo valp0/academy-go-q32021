@@ -5,13 +5,16 @@ import (
 	"time"
 )
 
+const maxId = 898
+const minId = 1
+
 // Returns a positive number between 0 and the given integer argument.
 var RandInt = func(max int) int {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 
 	num := r.Intn(max)
-	if 1 > num || num > 898 {
+	if minId > num || num > maxId {
 		return randInt(max)
 	}
 
@@ -23,7 +26,7 @@ func randInt(max int) int {
 	r := rand.New(s)
 
 	num := r.Intn(max)
-	if 1 > num || num > 898 {
+	if minId > num || num > maxId {
 		return randInt(max)
 	}
 

@@ -33,28 +33,6 @@ func getElements(content [][]string) ([]common.Element, error) {
 	return elements, nil
 }
 
-func filterElement(id string, content [][]string) ([]common.Element, error) {
-	pokeId, err := strconv.Atoi(id)
-	if err != nil {
-		err := errors.New("only integer type is allowed as an id")
-		return []common.Element{}, err
-	}
-
-	elements, err := getElements(content)
-	if err != nil {
-		return []common.Element{}, err
-	}
-
-	for _, e := range elements {
-		if e.Key == pokeId {
-			return []common.Element{e}, nil
-		}
-	}
-
-	err = errors.New("no element with id " + id + " was found")
-	return []common.Element{}, err
-}
-
 func sortElements(elements []common.Element) {
 	sort.Slice(elements, func(i, j int) bool {
 		return elements[i].Key < elements[j].Key
@@ -86,4 +64,21 @@ func alreadyStored(id int, path string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func filterElement(id string, elements []common.Element) ([]common.Element, error) {
+	pokeId, err := strconv.Atoi(id)
+	if err != nil {
+		err := errors.New("only integer type is allowed as an id")
+		return []common.Element{}, err
+	}
+
+	for _, e := range elements {
+		if e.Key == pokeId {
+			return []common.Element{e}, nil
+		}
+	}
+
+	err = errors.New("no element with id " + id + " was found")
+	return []common.Element{}, err
 }

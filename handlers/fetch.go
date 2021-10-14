@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/valp0/academy-go-q32021/common"
 )
@@ -13,42 +14,57 @@ import (
 // Fetch random pokemon info if no ID is given
 // Write said info to csv file
 
-type fetch interface {
+type fetcher interface {
 	Fetch(params map[string][]string, path string) ([]common.Element, error)
 }
 
 type fetchHandler struct {
-	service fetch
+	service fetcher
 }
 
-func NewFetchHandler(service fetch) fetchHandler {
+// Receives an instance of a type that satisfies the fetch interface
+// and returns a fetchHandler type containing it.
+func NewFetchHandler(service fetcher) fetchHandler {
 	return fetchHandler{service}
 }
+
+const (
+	notInt     = "must be an integer"
+	notInRange = "between 1 and 898"
+	existingId = "already stored in csv"
+)
 
 // The /fetch endpoint handler.
 func (fh fetchHandler) ApiFetch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	path := os.Getenv("PATH")
 
-	qParams := r.URL.Query()
-	res, err := fh.service.Fetch(qParams, path)
-	if err != nil {
-		if err.Error() == "invalid id, id must be an integer" || err.Error() == "invalid id, id must be between 1 and 898" {
-			common.BadReqError(w, err)
-			return
-		}
-
-		if err.Error()[len(err.Error())-25:] == "was already stored in csv" {
-			common.InternalError(w, err)
-			return
-		}
-
-		common.ExternalError(w, err)
+	if r.Method != http.MethodGet {
+		common.MethodNotAllowedError(w, r.Method)
 		return
 	}
 
-	_, err = fmt.Fprintln(w, common.PrettyJsonRes(res))
+	path := os.Getenv("PATH")
+
+	qParams := r.URL.Query()
+	checkMsg := strings.HasSuffix
+	res, err := fh.service.Fetch(qParams, path)
 	if err != nil {
+		msg := err.Error()
+		switch {
+		case checkMsg(msg, notInRange), checkMsg(msg, notInt):
+			common.BadReqError(w, err)
+			return
+		case checkMsg(msg, existingId):
+			common.InternalError(w, err)
+			return
+		default:
+			common.ExternalError(w, err)
+			return
+		}
+	}
+
+	b, err := fmt.Fprintln(w, common.PrettyJsonRes(res))
+	if err != nil || b < 1 {
 		common.InternalError(w, err)
 	}
 }

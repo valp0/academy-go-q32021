@@ -81,13 +81,13 @@ func TestReadSvc(t *testing.T) {
 		},
 	}
 
-	r := repo.Repo{}
+	r := repo.NewLocalRepo()
 	rSvc := NewReadSvc(r)
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			params := tc.params
-			res, err := rSvc.Query(params, tc.path)
+			res, err := rSvc.Read(params, tc.path)
 			if err != nil && tc.err != nil && err.Error() != tc.err.Error() {
 				t.Fatalf("error is not as expected:\ngot: %v\nwant: %v\n", err, tc.err)
 			}

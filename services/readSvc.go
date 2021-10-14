@@ -10,21 +10,18 @@ type getter interface {
 	GetElements(id, path string) ([]common.Element, error)
 }
 
-type repository interface {
-	getter
-	apiCaller
-}
-
 type readSvc struct {
-	repo repository
+	repo getter
 }
 
-func NewReadSvc(repo repository) readSvc {
+// Receives an instance of a type that satisfies the getter interface
+// and returns a readSvc type containing it.
+func NewReadSvc(repo getter) readSvc {
 	return readSvc{repo}
 }
 
 // Receives a url.Values, reads the id param and returns a prettified JSON response.
-func (rs readSvc) Query(params map[string][]string, path string) ([]common.Element, error) {
+func (rs readSvc) Read(params map[string][]string, path string) ([]common.Element, error) {
 	id, ok := params["id"]
 	if !ok {
 		id = []string{""}
