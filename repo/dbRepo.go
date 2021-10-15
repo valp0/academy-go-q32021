@@ -34,6 +34,7 @@ func (r localRepo) GetElements(id, path string) ([]common.Element, error) {
 	}
 
 	if id == "" {
+		sortElements(elements)
 		return elements, nil
 	}
 
