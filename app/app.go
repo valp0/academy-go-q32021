@@ -25,18 +25,22 @@ func RunServer() error {
 
 	lr := repo.NewLocalRepo()
 	ar := repo.NewApiRepo()
+	asr := repo.NewAsyncRepo()
 
 	hSvc := services.NewHomeSvc()
 	rSvc := services.NewReadSvc(lr)
 	fSvc := services.NewFetchSvc(ar)
+	aSvc := services.NewAsyncSvc(asr)
 
 	hh := handlers.NewHomeHandler(hSvc)
 	rh := handlers.NewReadHandler(rSvc)
 	fh := handlers.NewFetchHandler(fSvc)
+	ah := handlers.NewAsyncHandler(aSvc)
 
 	http.HandleFunc("/", hh.Home)
 	http.HandleFunc("/read", rh.Query)
 	http.HandleFunc("/fetch", fh.ApiFetch)
+	http.HandleFunc("/async", ah.Async)
 
 	log.Println("Listening on port", port[1:])
 	if err := http.ListenAndServe(port, nil); err != nil {

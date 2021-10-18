@@ -9,13 +9,23 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/valp0/academy-go-q32021/common"
 	"github.com/valp0/academy-go-q32021/repo"
 )
+
+var charactersMap = map[string]common.Element{
+	"36":  {Key: 36, Value: "clefable"},
+	"73":  {Key: 73, Value: "tentacruel"},
+	"125": {Key: 125, Value: "electabuzz"},
+	"142": {Key: 142, Value: "aerodactyl"},
+	"150": {Key: 150, Value: "mewtwo"},
+	"460": {Key: 460, Value: "abomasnow"},
+	"498": {Key: 498, Value: "tepig"},
+	"794": {Key: 794, Value: "buzzwole"},
+}
 
 func TestFetchSvc(t *testing.T) {
 	testCases := []struct {
@@ -87,24 +97,12 @@ func TestFetchSvc(t *testing.T) {
 
 var mockedGet = func(url string) (*http.Response, error) {
 	id := strings.Split(url, "/")[6]
-	jRes := getJson(id)
+	pokemon := charactersMap[id]
+	jRes, _ := json.Marshal(pokemon)
 	r := ioutil.NopCloser(bytes.NewReader(jRes))
 
 	return &http.Response{
 		StatusCode: 200,
 		Body:       r,
 	}, nil
-}
-
-func getJson(id string) []byte {
-	key, _ := strconv.Atoi(id)
-	for _, pokemon := range characters {
-		if pokemon.Key == key {
-			res, _ := json.Marshal(pokemon)
-			return res
-		}
-	}
-
-	res, _ := json.Marshal(characters[7])
-	return res
 }

@@ -29,7 +29,6 @@ func getElements(content [][]string) ([]common.Element, error) {
 		elements = append(elements, common.Element{Key: id, Value: name})
 	}
 
-	sortElements(elements)
 	return elements, nil
 }
 
@@ -81,4 +80,43 @@ func filterElement(id string, elements []common.Element) ([]common.Element, erro
 
 	err = errors.New("no element with id " + id + " was found")
 	return []common.Element{}, err
+}
+
+func checkType(r string) (string, error) {
+	if r == "" {
+		return "all", nil
+	}
+
+	if r == "odd" || r == "even" {
+		return r, nil
+	} else {
+		err := errors.New("type can only be \"odd\" or \"even\"")
+		return "", err
+	}
+}
+
+func checkItems(r string) (int, error) {
+	if r == "" {
+		return 1000, nil
+	}
+
+	if num, err := strconv.Atoi(r); err == nil {
+		return num, nil
+	} else {
+		err = errors.New("items can only be integer type")
+		return 0, err
+	}
+}
+
+func checkIpw(r string) (int, error) {
+	if r == "" {
+		return 500, nil
+	}
+
+	if num, err := strconv.Atoi(r); err == nil {
+		return num, nil
+	} else {
+		err = errors.New("items_per_worker can only be integer type")
+		return 0, err
+	}
 }

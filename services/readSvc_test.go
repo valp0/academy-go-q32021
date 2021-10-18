@@ -88,6 +88,10 @@ func TestReadSvc(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			params := tc.params
 			res, err := rSvc.Read(params, tc.path)
+			if err == nil && tc.err != nil || err != nil && tc.err == nil {
+				t.Fatalf("error is not as expected:\ngot: %v\nwant: %v\n", err, tc.err)
+			}
+
 			if err != nil && tc.err != nil && err.Error() != tc.err.Error() {
 				t.Fatalf("error is not as expected:\ngot: %v\nwant: %v\n", err, tc.err)
 			}
