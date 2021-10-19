@@ -6,7 +6,7 @@ import (
 
 func TestHomeSvc(t *testing.T) {
 	hs := NewHomeSvc()
-	expected := "At this stage, available endpoints are /read and /fetch."
+	expected := "At this stage, available endpoints are /read, /fetch and /async."
 
 	t.Run("home message", func(t *testing.T) {
 		msg := hs.Inform()

@@ -89,9 +89,13 @@ func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) 
 		})
 	}
 
-	for _, task := range tasks {
-		pool.ScheduleWork(task)
-	}
+	go func() {
+		for _, task := range tasks {
+			pool.ScheduleWork(task)
+		}
+
+		pool.SetFinished()
+	}()
 
 	pool.Close()
 

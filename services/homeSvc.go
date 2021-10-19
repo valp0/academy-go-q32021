@@ -8,5 +8,5 @@ func NewHomeSvc() homeSvc {
 }
 
 func (homeSvc) Inform() string {
-	return "At this stage, available endpoints are /read and /fetch."
+	return "At this stage, available endpoints are /read, /fetch and /async."
 }
