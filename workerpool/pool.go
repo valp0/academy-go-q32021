@@ -88,8 +88,16 @@ func (gp *GoroutinePool) AddWorkers(workers int) {
 
 				mutex.Unlock()
 			}
-			log.Printf("Worker %d received %d items and returned %d items\n", workerId, processed, workerCount)
+
+			if processed > 0 {
+				log.Printf("Worker %d received %d items and returned %d items.\n", workerId, processed, workerCount)
+			}
+
 			gp.wg.Done()
 		}(i + 1)
+	}
+
+	if gp.maxItems == 0 || gp.ipw == 0 {
+		log.Println("0 items were returned.")
 	}
 }

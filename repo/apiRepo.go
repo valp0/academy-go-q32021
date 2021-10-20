@@ -23,11 +23,11 @@ func NewApiRepo() apiRepo {
 
 // Receives a url to call an API and a path to the file to store received data.
 func (r apiRepo) CallPokeApi(url, path string) ([]common.Element, error) {
-	// Calling GET HTTP method, which returns a response and an error.
-	resp, err := CallApi(url)
-
 	var pokeId int
 	var pokeName string
+
+	// Calling GET HTTP method, which returns a response and an error.
+	resp, err := CallApi(url)
 
 	if err != nil {
 		return []common.Element{}, err

@@ -21,7 +21,7 @@ func TestAsyncSvc(t *testing.T) {
 			"works fine, displays whole list",
 			"../files/pokemock.csv",
 			map[string][]string{},
-			8,
+			9,
 			nil,
 		},
 		{
@@ -40,7 +40,7 @@ func TestAsyncSvc(t *testing.T) {
 		},
 		{
 			"unexisting file, creates it",
-			"../files/deleteThis.csv",
+			"../files/deleteThisAsWell.csv",
 			map[string][]string{},
 			0,
 			nil,
@@ -49,7 +49,7 @@ func TestAsyncSvc(t *testing.T) {
 			"displays odd elements",
 			"../files/pokemock.csv",
 			map[string][]string{"type": {"odd"}},
-			2,
+			3,
 			nil,
 		},
 		{
@@ -67,10 +67,10 @@ func TestAsyncSvc(t *testing.T) {
 			nil,
 		},
 		{
-			"displays four elements",
+			"displays eight elements",
 			"../files/pokemock.csv",
-			map[string][]string{"items_per_worker": {"2"}},
-			4,
+			map[string][]string{"items_per_worker": {"1"}},
+			8,
 			nil,
 		},
 	}
@@ -100,8 +100,8 @@ func TestAsyncSvc(t *testing.T) {
 		})
 	}
 
-	err := os.Remove("../files/deleteThis.csv")
+	err := os.Remove("../files/deleteThisAsWell.csv")
 	if err != nil {
-		log.Print("Couldn't remove ../files/deleteThis.csv")
+		log.Print("Couldn't remove ../files/deleteThisAsWell.csv")
 	}
 }

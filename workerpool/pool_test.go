@@ -26,7 +26,7 @@ func TestDispatcher(t *testing.T) {
 	wg.Add(taskSize)
 
 	//specific task
-	sampleStringTaskFn := func(dm ...interface{}) {
+	sampleTask := func(dm ...interface{}) {
 		if input, ok := dm[0].(string); ok {
 			time.Sleep(time.Microsecond)
 			if input != "" {
@@ -41,13 +41,17 @@ func TestDispatcher(t *testing.T) {
 	for v := 0; v < taskSize; v++ {
 		tasks = append(tasks, &testTask{
 			Name:          fmt.Sprintf("task %v", v),
-			TaskProcessor: sampleStringTaskFn,
+			TaskProcessor: sampleTask,
 		})
 	}
 
-	for _, task := range tasks {
-		pool.ScheduleWork(task)
-	}
+	go func() {
+		for _, task := range tasks {
+			pool.ScheduleWork(task)
+		}
+		pool.SetFinished()
+	}()
+
 	pool.Close()
 
 	wg.Wait()

@@ -28,9 +28,10 @@ func NewReadHandler(service reader) readHandler {
 }
 
 const (
-	invalidId   = "please use integers for ID field"
-	invalidPath = "encontrar la ruta especificada."
-	noIdFound   = "wasFound"
+	invalidCsvId = "please use integers for id field"
+	invalidPath  = "encontrar la ruta especificada."
+	invalidId    = "type is allowed as an id"
+	noIdFound    = "was found"
 )
 
 // The /read endpoint handler.
@@ -52,6 +53,9 @@ func (rh readHandler) Query(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case checkMsg(msg, invalidId), checkMsg(msg, invalidPath), checkMsg(msg, noIdFound):
 			common.BadReqError(w, err)
+			return
+		case checkMsg(msg, invalidCsvId):
+			common.ExternalError(w, err)
 			return
 		default:
 			common.InternalError(w, err)

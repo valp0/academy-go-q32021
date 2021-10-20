@@ -17,14 +17,8 @@ import (
 )
 
 var charactersMap = map[string]common.Element{
-	"36":  {Key: 36, Value: "clefable"},
 	"73":  {Key: 73, Value: "tentacruel"},
-	"125": {Key: 125, Value: "electabuzz"},
-	"142": {Key: 142, Value: "aerodactyl"},
 	"150": {Key: 150, Value: "mewtwo"},
-	"460": {Key: 460, Value: "abomasnow"},
-	"498": {Key: 498, Value: "tepig"},
-	"794": {Key: 794, Value: "buzzwole"},
 }
 
 func TestFetchSvc(t *testing.T) {

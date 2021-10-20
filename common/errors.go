@@ -1,7 +1,6 @@
 package common
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -32,7 +31,7 @@ func BadReqError(w http.ResponseWriter, err error) {
 // received method name to received response writer and console.
 func MethodNotAllowedError(w http.ResponseWriter, method string) {
 	w.WriteHeader(http.StatusMethodNotAllowed)
-	err := errors.New(fmt.Sprintf("method %s not allowed on this endpoint", method))
+	err := fmt.Errorf("method %s not allowed on this endpoint", method)
 	displayErr(w, err)
 }
 

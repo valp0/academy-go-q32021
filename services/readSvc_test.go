@@ -19,6 +19,7 @@ var characters = []common.Element{
 	{Key: 150, Value: "mewtwo"},
 	{Key: 460, Value: "abomasnow"},
 	{Key: 498, Value: "tepig"},
+	{Key: 675, Value: "pangoro"},
 	{Key: 794, Value: "buzzwole"},
 }
 
@@ -43,7 +44,7 @@ func TestReadSvc(t *testing.T) {
 			"works fine, displays whole list",
 			"../files/pokemock.csv",
 			map[string][]string{},
-			8,
+			9,
 			characters,
 			nil,
 		},

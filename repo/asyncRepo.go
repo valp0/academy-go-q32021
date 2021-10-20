@@ -2,6 +2,7 @@ package repo
 
 import (
 	"encoding/csv"
+	"io"
 	"os"
 	"sync"
 
@@ -16,8 +17,6 @@ func NewAsyncRepo() asyncRepo {
 	return asyncRepo{}
 }
 
-const workers = 2
-
 // Returns elements matching type, items and items_per_worker.
 func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) {
 	f, err := os.OpenFile(path, os.O_RDONLY|os.O_CREATE, 0644)
@@ -27,17 +26,6 @@ func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) 
 	defer f.Close()
 
 	filtered := []common.Element{}
-
-	csvReader := csv.NewReader(f)
-	content, err := csvReader.ReadAll()
-	if err != nil {
-		return filtered, err
-	}
-
-	elements, err := getElements(content)
-	if err != nil {
-		return filtered, err
-	}
 
 	parity, err := checkType(t)
 	if err != nil {
@@ -54,8 +42,9 @@ func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) 
 		return filtered, err
 	}
 
-	// We create a worker pool with two workers.
-	pool := workerpool.NewGoroutinePool(workers, itemsPerWorker, itemAmount)
+	// We create a worker pool with n workers.
+	n := getMaxWorkers()
+	pool := workerpool.NewGoroutinePool(n, itemsPerWorker, itemAmount)
 	mutex := &sync.Mutex{}
 
 	filterProcessor := func(element common.Element, parity string) bool {
@@ -80,17 +69,29 @@ func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) 
 		return added
 	}
 
-	var tasks []*filterTask
-	for _, element := range elements {
-		tasks = append(tasks, &filterTask{
-			element: element,
-			filter:  filterProcessor,
-			parity:  parity,
-		})
-	}
-
+	var errStatus error = nil
+	csvReader := csv.NewReader(f)
 	go func() {
-		for _, task := range tasks {
+		i := 0
+		for {
+			i++
+			record, err := csvReader.Read()
+			if err == io.EOF {
+				break
+			}
+
+			if err != nil {
+				errStatus = err
+				break
+			}
+
+			element, err := getElement(record, i)
+			if err != nil {
+				errStatus = err
+				break
+			}
+
+			task := getTask(element, filterProcessor, parity)
 			pool.ScheduleWork(task)
 		}
 
@@ -98,6 +99,9 @@ func (r asyncRepo) Filter(t, items, ipw, path string) ([]common.Element, error) 
 	}()
 
 	pool.Close()
+	if errStatus != nil {
+		return []common.Element{}, errStatus
+	}
 
 	sortElements(filtered)
 	return filtered, nil
@@ -109,6 +113,7 @@ type filterTask struct {
 	filter  func(common.Element, string) bool
 }
 
+// Filters an element of a filterTask using its parity (even/odd).
 func (ft *filterTask) Run() bool {
 	return ft.filter(ft.element, ft.parity)
 }
