@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/valp0/academy-go-q32021/handlers"
 	"github.com/valp0/academy-go-q32021/repo"
@@ -16,11 +17,11 @@ const (
 	path = "./files/pokemons.csv"
 )
 
-// Will setup a server to run using configuration provided in app.go.
+// Will setup a server to run using the constants provided in app.go.
 func RunServer() error {
 	os.Setenv("PATH", path)
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 	go logExit(c)
 
 	lr := repo.NewLocalRepo()

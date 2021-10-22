@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 
@@ -101,6 +102,10 @@ func checkItems(r string) (int, error) {
 	}
 
 	if num, err := strconv.Atoi(r); err == nil {
+		if num < 0 {
+			err := errors.New("items cannot be a negative number")
+			return 0, err
+		}
 		return num, nil
 	} else {
 		err = errors.New("items can only be integer type")
@@ -114,9 +119,50 @@ func checkIpw(r string) (int, error) {
 	}
 
 	if num, err := strconv.Atoi(r); err == nil {
+		if num < 0 {
+			err := errors.New("items_per_worker cannot be a negative number")
+			return 0, err
+		}
 		return num, nil
 	} else {
 		err = errors.New("items_per_worker can only be integer type")
 		return 0, err
 	}
+}
+
+func getElement(elem []string, line int) (common.Element, error) {
+	if len(elem) != 2 {
+		err := errors.New("csv lines can only have two fields")
+		return common.Element{}, err
+	}
+
+	name := elem[1]
+
+	id, err := strconv.Atoi(elem[0])
+	if err != nil {
+		str := fmt.Sprintf("parsing error in line %d: \"%s\" is not a valid id, please use integers for id field",
+			line, err.Error()[23:23+len(elem[0])])
+		log.Println(str)
+		err := errors.New(str)
+		return common.Element{}, err
+	}
+
+	return common.Element{Key: id, Value: name}, nil
+}
+
+func getTask(element common.Element, filter func(common.Element, string) bool, parity string) *filterTask {
+	return &filterTask{
+		element: element,
+		filter:  filter,
+		parity:  parity,
+	}
+}
+
+func getMaxWorkers() int {
+	corenum := runtime.NumCPU()
+	if corenum > 10 {
+		return 10
+	}
+
+	return corenum
 }
