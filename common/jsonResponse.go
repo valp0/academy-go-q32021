@@ -1,6 +1,6 @@
 package common
 
-// Return what is given as an argument inside a JSON response
+// Return what is given as an argument inside a JSON response.
 
 import (
 	"encoding/json"
